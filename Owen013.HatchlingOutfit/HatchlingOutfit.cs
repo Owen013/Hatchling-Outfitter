@@ -84,6 +84,8 @@ namespace HatchlingOutfit
                 allParts = new List<GameObject>();
                 allParts.AddRange(suitlessParts);
                 allParts.AddRange(suitParts);
+
+                ChangeOutfit();
             }
         }
 
