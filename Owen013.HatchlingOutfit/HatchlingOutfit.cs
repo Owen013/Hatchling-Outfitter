@@ -21,7 +21,7 @@ namespace HatchlingOutfit
         public override void Configure(IModConfig config)
         {
             base.Configure(config);
-            suitBodySetting = config.GetSettingsValue<string>("Suit Body");
+            suitBodySetting = config.GetSettingsValue<string>("Suit Jacket");
             suitArmsSetting = config.GetSettingsValue<string>("Suit Arms");
             helmetSetting = config.GetSettingsValue<string>("Helmet");
             jetpackSetting = config.GetSettingsValue<string>("Jetpack");
