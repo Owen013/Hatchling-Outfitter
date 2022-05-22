@@ -9,22 +9,28 @@ namespace HatchlingOutfit
     public class HatchlingOutfit : ModBehaviour
     {
         // Config vars
-        string suitBodySetting, suitArmsSetting, helmetSetting, jetpackSetting;
+        string bodySetting, armsSetting, headSetting, jetpackSetting, suitOneArm;
+        bool missingBody, missingHead, missingLArm, missingRArm;
 
         // Mod vars
         public static HatchlingOutfit Instance;
         PlayerCharacterController characterController;
         PlayerAnimController animController;
-        GameObject suitlessModel, suitlessBody, suitlessHead, suitlessRArm, suitlessLArm, suitlessHeadShader, suitlessRArmShader,
-                   suitModel, suitBody, suitHead, suitRArm, suitLArm, suitHeadShader, suitRArmShader, suitJetpack, suitJetpackFX;
+        GameObject suitlessModel, suitlessBody, suitlessHead, suitlessLArm, suitlessRArm, suitlessHeadShader, suitlessRArmShader,
+                   suitModel, suitBody, suitHead, suitLArm, suitRArm, suitHeadShader, suitRArmShader, suitJetpack, suitJetpackFX;
 
         public override void Configure(IModConfig config)
         {
             base.Configure(config);
-            suitBodySetting = config.GetSettingsValue<string>("Suit Jacket");
-            suitArmsSetting = config.GetSettingsValue<string>("Suit Arms");
-            helmetSetting = config.GetSettingsValue<string>("Helmet");
+            bodySetting = config.GetSettingsValue<string>("Body");
+            armsSetting = config.GetSettingsValue<string>("Arms");
+            headSetting = config.GetSettingsValue<string>("Head");
             jetpackSetting = config.GetSettingsValue<string>("Jetpack");
+            suitOneArm = config.GetSettingsValue<string>("Only Suit One Arm");
+            missingBody = config.GetSettingsValue<bool>("Missing Body");
+            missingHead = config.GetSettingsValue<bool>("Missing Head");
+            missingLArm = config.GetSettingsValue<bool>("Missing Left Arm");
+            missingRArm = config.GetSettingsValue<bool>("Missing Right Arm");
             Setup();
         }
 
@@ -67,8 +73,8 @@ namespace HatchlingOutfit
                 string suitless = "player_mesh_noSuit:Player_";
                 suitlessBody = suitlessModel.transform.Find(suitless + "Clothes").gameObject;
                 suitlessHead = suitlessModel.transform.Find(suitless + "Head").gameObject;
-                suitlessRArm = suitlessModel.transform.Find(suitless + "RightArm").gameObject;
                 suitlessLArm = suitlessModel.transform.Find(suitless + "LeftArm").gameObject;
+                suitlessRArm = suitlessModel.transform.Find(suitless + "RightArm").gameObject;
                 suitlessHeadShader = suitlessModel.transform.Find(suitless + "Head_ShadowCaster").gameObject;
                 suitlessRArmShader = suitlessModel.transform.Find(suitless + "RightArm_ShadowCaster").gameObject;
 
@@ -76,8 +82,8 @@ namespace HatchlingOutfit
                 string suit = "Traveller_Mesh_v01:";
                 suitBody = suitModel.transform.Find(suit + "PlayerSuit_Body").gameObject;
                 suitHead = suitModel.transform.Find(suit + "PlayerSuit_Helmet").gameObject;
-                suitRArm = suitModel.transform.Find(suit + "PlayerSuit_RightArm").gameObject;
                 suitLArm = suitModel.transform.Find(suit + "PlayerSuit_LeftArm").gameObject;
+                suitRArm = suitModel.transform.Find(suit + "PlayerSuit_RightArm").gameObject;
                 suitHeadShader = suitModel.transform.Find(suit + "PlayerSuit_Helmet_ShadowCaster").gameObject;
                 suitRArmShader = suitModel.transform.Find(suit + "PlayerSuit_RightArm_ShadowCaster").gameObject;
                 suitJetpack = suitModel.transform.Find(suit + "Props_HEA_Jetpack").gameObject;
@@ -92,15 +98,15 @@ namespace HatchlingOutfit
             bool isSuited = characterController._isWearingSuit;
 
             // Jacket
-            switch (suitBodySetting)
+            switch (bodySetting)
             {
-                case "Always Off":
+                case "Always Suitless":
                     suitBody.SetActive(false);
                     break;
                 case "Default":
                     suitBody.SetActive(isSuited);
                     break;
-                case "Always On":
+                case "Always Suited":
                     suitBody.SetActive(true);
                     break;
                 case "Opposite":
@@ -109,36 +115,36 @@ namespace HatchlingOutfit
             }
 
             // Arms
-            switch (suitArmsSetting)
+            switch (armsSetting)
             {
-                case "Always Off":
-                    suitRArm.SetActive(false);
+                case "Always Suitless":
                     suitLArm.SetActive(false);
+                    suitRArm.SetActive(false);
                     break;
                 case "Default":
-                    suitRArm.SetActive(isSuited);
                     suitLArm.SetActive(isSuited);
+                    suitRArm.SetActive(isSuited);
                     break;
-                case "Always On":
-                    suitRArm.SetActive(true);
+                case "Always Suited":
                     suitLArm.SetActive(true);
+                    suitRArm.SetActive(true);
                     break;
                 case "Opposite":
-                    suitRArm.SetActive(!isSuited);
                     suitLArm.SetActive(!isSuited);
+                    suitRArm.SetActive(!isSuited);
                     break;
             }
 
             // Helmet
-            switch (helmetSetting)
+            switch (headSetting)
             {
-                case "Always Off":
+                case "Always Suitless":
                     suitHead.SetActive(false);
                     break;
                 case "Default":
                     suitHead.SetActive(isSuited);
                     break;
-                case "Always On":
+                case "Always Suited":
                     suitHead.SetActive(true);
                     break;
                 case "Opposite":
@@ -173,21 +179,60 @@ namespace HatchlingOutfit
                     break;
             }
 
-            // Enable shaders for visible suit parts that have them
-            suitHeadShader.SetActive(suitHead.activeSelf);
-            suitRArmShader.SetActive(suitRArm.activeSelf);
+            // Set both suitless and suited whole models as visible
+            suitlessModel.SetActive(true);
+            suitModel.SetActive(true);
 
             // Enable suitless body part if the cooresponding suited part is inactive
             suitlessBody.SetActive(!suitBody.activeSelf);
             suitlessHead.SetActive(!suitHead.activeSelf);
-            suitlessRArm.SetActive(!suitRArm.activeSelf);
             suitlessLArm.SetActive(!suitLArm.activeSelf);
-            suitlessHeadShader.SetActive(!suitHeadShader.activeSelf);
-            suitlessRArmShader.SetActive(!suitRArmShader.activeSelf);
+            suitlessRArm.SetActive(!suitRArm.activeSelf);
 
-            // Set both suitless and suited models as visible and set individual parts' visibility
-            suitlessModel.SetActive(true);
-            suitModel.SetActive(true);
+            // If player chose to suit only one arm, unsuit the other
+            switch (suitOneArm)
+            {
+                case "Off":
+                    break;
+
+                case "Left":
+                    suitlessRArm.SetActive(true);
+                    suitRArm.SetActive(false);
+                    break;
+
+                case "Right":
+                    suitlessLArm.SetActive(true);
+                    suitLArm.SetActive(false);
+                    break;
+            }
+
+            // Remove chosen body parts
+            if (missingBody)
+            {
+                suitlessBody.SetActive(false);
+                suitBody.SetActive(false);
+            }
+            if (missingHead)
+            {
+                suitlessHead.SetActive(false);
+                suitHead.SetActive(false);
+            }
+            if (missingLArm)
+            {
+                suitlessLArm.SetActive(false);
+                suitLArm.SetActive(false);
+            }
+            if (missingRArm)
+            {
+                suitlessRArm.SetActive(false);
+                suitRArm.SetActive(false);
+            }
+
+            // Enable shaders for visible parts that have them
+            suitlessHeadShader.SetActive(suitHeadShader.activeSelf);
+            suitlessRArmShader.SetActive(suitRArmShader.activeSelf);
+            suitHeadShader.SetActive(suitHead.activeSelf);
+            suitRArmShader.SetActive(suitRArm.activeSelf);
         }
 
         void ChangeAnimGroup(string animGroup)

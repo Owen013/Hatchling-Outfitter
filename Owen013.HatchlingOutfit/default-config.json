@@ -1,33 +1,45 @@
 {
-	"enabled": true,
-	"settings": {
+  "enabled": true,
+  "settings": {
 
-		"Suit Jacket": {
-			"type": "selector",
-			"value": "Always On",
-			"options": [ "Always Off", "Default", "Always On", "Opposite" ],
-			"title": "Suit Body"
-		},
+    "Body": {
+      "type": "selector",
+      "value": "Always Suited",
+      "options": [ "Always Suitless", "Default", "Always Suited", "Opposite" ],
+      "title": "Suit Body"
+    },
 
-		"Suit Arms": {
-			"type": "selector",
-			"value": "Always Off",
-			"options": [ "Always Off", "Default", "Always On", "Opposite" ],
-			"title": "Suit Arms"
-		},
+    "Arms": {
+      "type": "selector",
+      "value": "Always Suitless",
+      "options": [ "Always Suitless", "Default", "Always Suited", "Opposite" ],
+      "title": "Suit Arms"
+    },
 
-		"Helmet": {
-			"type": "selector",
-			"value": "Default",
-			"options": [ "Always Off", "Default", "Always On", "Opposite" ],
-			"title": "Helmet"
-		},
+    "Head": {
+      "type": "selector",
+      "value": "Default",
+      "options": [ "Always Suitless", "Default", "Always Suited", "Opposite" ],
+      "title": "Helmet"
+    },
 
-		"Jetpack": {
-			"type": "selector",
-			"value": "Default",
-			"options": [ "Always Off", "Default", "Always On", "Opposite" ],
-			"title": "Jetpack"
-		}
-	}
+    "Jetpack": {
+      "type": "selector",
+      "value": "Default",
+      "options": [ "Always Off", "Default", "Always On", "Opposite" ],
+      "title": "Jetpack"
+    },
+
+    "Only Suit One Arm": {
+      "type": "selector",
+      "value": "Off",
+      "options": [ "Off", "Left", "Right" ],
+      "title": "Only Suit One Arm"
+    },
+
+    "Missing Body": false,
+    "Missing Head": false,
+    "Missing Left Arm": false,
+    "Missing Right Arm": false
+  }
 }
