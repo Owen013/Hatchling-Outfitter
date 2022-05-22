@@ -1,0 +1,9 @@
+{
+	"enabled": true,
+	"settings": {
+		"Enable Outfitter": true,
+		"Suit Jacket On": true,
+		"Suit Arms On": false,
+		"Wearing Helmet": false
+	}
+}
