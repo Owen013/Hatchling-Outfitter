@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "5t+ofgxgNOTn+5+lV3OCiu+YSojxFKFm0K+ufJf2B6mNW64YtjNVXnd5NuO+6OR6yxg5LBEgp4hkNj+bkJGbjA==",
+  "dgSpecHash": "ttjOeiDuDOwGWFUNw52tkxq3s904TfqaiP0TsTylFRhX6gLwxlet1c+VhyGOcVlczzsOYecPoLnb1bRRkWkS5Q==",
   "success": true,
-  "projectFilePath": "C:\\Users\\owen\\source\\repos\\Owen013.SuitToggle\\Owen013.SuitToggle\\SuitToggle.csproj",
+  "projectFilePath": "C:\\Users\\owen\\source\\repos\\Owen013.SuitToggle\\Owen013.SuitToggle\\HatchlingOutfit.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\owen\\.nuget\\packages\\json.net.unity3d\\9.0.1\\json.net.unity3d.9.0.1.nupkg.sha512",
     "C:\\Users\\owen\\.nuget\\packages\\lib.harmony\\1.2.0.1\\lib.harmony.1.2.0.1.nupkg.sha512",

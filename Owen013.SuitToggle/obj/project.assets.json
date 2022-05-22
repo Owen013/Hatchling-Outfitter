@@ -430,24 +430,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\owen\\.nuget\\packages\\": {},
-    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+    "C:\\Users\\owen\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\owen\\source\\repos\\Owen013.SuitToggle\\Owen013.SuitToggle\\SuitToggle.csproj",
-      "projectName": "SuitToggle",
-      "projectPath": "C:\\Users\\owen\\source\\repos\\Owen013.SuitToggle\\Owen013.SuitToggle\\SuitToggle.csproj",
+      "projectUniqueName": "C:\\Users\\owen\\source\\repos\\Owen013.SuitToggle\\Owen013.SuitToggle\\HatchlingOutfit.csproj",
+      "projectName": "HatchlingOutfit",
+      "projectPath": "C:\\Users\\owen\\source\\repos\\Owen013.SuitToggle\\Owen013.SuitToggle\\HatchlingOutfit.csproj",
       "packagesPath": "C:\\Users\\owen\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\owen\\source\\repos\\Owen013.SuitToggle\\Owen013.SuitToggle\\obj\\",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-      ],
       "configFilePaths": [
         "C:\\Users\\owen\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -482,7 +477,7 @@
             "version": "[1.1.12.125, )"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.212\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.300\\RuntimeIdentifierGraph.json"
       }
     }
   }
