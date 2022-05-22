@@ -1,9 +1,33 @@
 {
 	"enabled": true,
 	"settings": {
-		"Enable Outfitter": true,
-		"Suit Jacket On": true,
-		"Suit Arms On": false,
-		"Wearing Helmet": false
+
+		"Suit Jacket": {
+			"type": "selector",
+			"value": "Always On",
+			"options": [ "Always Off", "Default", "Always On", "Opposite" ],
+			"title": "Suit Body"
+		},
+
+		"Suit Arms": {
+			"type": "selector",
+			"value": "Always Off",
+			"options": [ "Always Off", "Default", "Always On", "Opposite" ],
+			"title": "Suit Arms"
+		},
+
+		"Helmet": {
+			"type": "selector",
+			"value": "Default",
+			"options": [ "Always Off", "Default", "Always On", "Opposite" ],
+			"title": "Helmet"
+		},
+
+		"Jetpack": {
+			"type": "selector",
+			"value": "Default",
+			"options": [ "Always Off", "Default", "Always On", "Opposite" ],
+			"title": "Jetpack"
+		}
 	}
 }

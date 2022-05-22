@@ -8,26 +8,29 @@ namespace HatchlingOutfit
 {
     public class HatchlingOutfit : ModBehaviour
     {
-        bool enableMod, jacketOn, armsOn, wearingHelmet;
+        // Config vars
+        string suitBodySetting, suitArmsSetting, helmetSetting, jetpackSetting;
 
+        // Mod vars
         public static HatchlingOutfit Instance;
         PlayerCharacterController characterController;
+        PlayerAnimController animController;
         GameObject suitlessModel, suitlessBody, suitlessHead, suitlessRArm, suitlessLArm, suitlessHeadShader, suitlessRArmShader,
-                   suitModel, suitBody, suitHead, suitRArm, suitLArm, suitHeadShader, suitRArmShader, suitJetpack;
-        List<GameObject> suitlessParts, suitParts, allParts;
+                   suitModel, suitBody, suitHead, suitRArm, suitLArm, suitHeadShader, suitRArmShader, suitJetpack, suitJetpackFX;
 
         public override void Configure(IModConfig config)
         {
             base.Configure(config);
-            enableMod = config.GetSettingsValue<bool>("Enable Outfitter");
-            jacketOn = config.GetSettingsValue<bool>("Suit Jacket On");
-            armsOn = config.GetSettingsValue<bool>("Suit Arms On");
-            wearingHelmet = config.GetSettingsValue<bool>("Wearing Helmet");
+            suitBodySetting = config.GetSettingsValue<string>("Suit Body");
+            suitArmsSetting = config.GetSettingsValue<string>("Suit Arms");
+            helmetSetting = config.GetSettingsValue<string>("Helmet");
+            jetpackSetting = config.GetSettingsValue<string>("Jetpack");
             Setup();
         }
 
         private void Awake()
         {
+            // Static reference to mod so it can be used in patches
             Instance = this;
         }
 
@@ -35,23 +38,32 @@ namespace HatchlingOutfit
         {
             ModHelper.HarmonyHelper.AddPostfix<PlayerAnimController>(
                 "Start", typeof(Patches), nameof(Patches.PlayerAnimControllerAwake));
+
             ModHelper.HarmonyHelper.AddPostfix<PlayerCharacterController>(
                 "OnSuitUp", typeof(Patches), nameof(Patches.SuitChanged));
+
             ModHelper.HarmonyHelper.AddPostfix<PlayerCharacterController>(
                 "OnRemoveSuit", typeof(Patches), nameof(Patches.SuitChanged));
         }
 
         public void Setup()
         {
-            int count = 0;
+            // Make sure that the scene is the SS or Eye
             OWScene scene = LoadManager.s_currentScene;
             if (scene == OWScene.SolarSystem || scene == OWScene.EyeOfTheUniverse)
             {
-                characterController = FindObjectOfType<PlayerCharacterController>();
+                // Temporary vars
                 PlayerBody playerBody = FindObjectOfType<PlayerBody>();
                 GameObject playerModel = playerBody.transform.Find("Traveller_HEA_Player_v2").gameObject;
+
+                // Separately grab the suitless and suited models
+                characterController = FindObjectOfType<PlayerCharacterController>();
+                animController = FindObjectOfType<PlayerAnimController>();
                 suitlessModel = playerModel.transform.Find("player_mesh_noSuit:Traveller_HEA_Player").gameObject;
                 suitModel = playerModel.transform.Find("Traveller_Mesh_v01:Traveller_Geo").gameObject;
+                suitJetpackFX = playerBody.transform.Find("PlayerVFX").gameObject;
+
+                // Get all individual parts for suitless
                 string suitless = "player_mesh_noSuit:Player_";
                 suitlessBody = suitlessModel.transform.Find(suitless + "Clothes").gameObject;
                 suitlessHead = suitlessModel.transform.Find(suitless + "Head").gameObject;
@@ -59,13 +71,8 @@ namespace HatchlingOutfit
                 suitlessLArm = suitlessModel.transform.Find(suitless + "LeftArm").gameObject;
                 suitlessHeadShader = suitlessModel.transform.Find(suitless + "Head_ShadowCaster").gameObject;
                 suitlessRArmShader = suitlessModel.transform.Find(suitless + "RightArm_ShadowCaster").gameObject;
-                suitlessParts = new List<GameObject>();
-                suitlessParts.Add(suitlessBody);
-                suitlessParts.Add(suitlessHead);
-                suitlessParts.Add(suitlessRArm);
-                suitlessParts.Add(suitlessLArm);
-                suitlessParts.Add(suitlessHeadShader);
-                suitlessParts.Add(suitlessRArmShader);
+
+                // Get all individual parts for suited
                 string suit = "Traveller_Mesh_v01:";
                 suitBody = suitModel.transform.Find(suit + "PlayerSuit_Body").gameObject;
                 suitHead = suitModel.transform.Find(suit + "PlayerSuit_Helmet").gameObject;
@@ -74,75 +81,128 @@ namespace HatchlingOutfit
                 suitHeadShader = suitModel.transform.Find(suit + "PlayerSuit_Helmet_ShadowCaster").gameObject;
                 suitRArmShader = suitModel.transform.Find(suit + "PlayerSuit_RightArm_ShadowCaster").gameObject;
                 suitJetpack = suitModel.transform.Find(suit + "Props_HEA_Jetpack").gameObject;
-                suitParts = new List<GameObject>();
-                suitParts.Add(suitBody);
-                suitParts.Add(suitHead);
-                suitParts.Add(suitRArm);
-                suitParts.Add(suitLArm);
-                suitParts.Add(suitHeadShader);
-                suitParts.Add(suitRArmShader);
-                allParts = new List<GameObject>();
-                allParts.AddRange(suitlessParts);
-                allParts.AddRange(suitParts);
 
+                // Now that all vars are set, make the actual ingame changes
                 ChangeOutfit();
             }
         }
 
         public void ChangeOutfit()
         {
-            switch (enableMod)
+            bool isSuited = characterController._isWearingSuit;
+
+            // Jacket
+            switch (suitBodySetting)
             {
-                case false:
-                    if (!characterController._isWearingSuit)
-                    {
-                        foreach (GameObject part in allParts) part.SetActive(true);
-                        suitlessModel.SetActive(true);
-                        suitModel.SetActive(false);
-                    }
-                    else
-                    {
-                        foreach (GameObject part in allParts) part.SetActive(true);
-                        suitlessModel.SetActive(false);
-                        suitModel.SetActive(true);
-                    }
-
+                case "Always Off":
+                    suitBody.SetActive(false);
                     break;
+                case "Default":
+                    suitBody.SetActive(isSuited);
+                    break;
+                case "Always On":
+                    suitBody.SetActive(true);
+                    break;
+                case "Opposite":
+                    suitBody.SetActive(!isSuited);
+                    break;
+            }
 
-                case true:
-                    suitlessModel.SetActive(true);
-                    suitModel.SetActive(true);
+            // Arms
+            switch (suitArmsSetting)
+            {
+                case "Always Off":
+                    suitRArm.SetActive(false);
+                    suitLArm.SetActive(false);
+                    break;
+                case "Default":
+                    suitRArm.SetActive(isSuited);
+                    suitLArm.SetActive(isSuited);
+                    break;
+                case "Always On":
+                    suitRArm.SetActive(true);
+                    suitLArm.SetActive(true);
+                    break;
+                case "Opposite":
+                    suitRArm.SetActive(!isSuited);
+                    suitLArm.SetActive(!isSuited);
+                    break;
+            }
 
-                    if (jacketOn) suitBody.SetActive(true);
-                    else suitBody.SetActive(false);
+            // Helmet
+            switch (helmetSetting)
+            {
+                case "Always Off":
+                    suitHead.SetActive(false);
+                    break;
+                case "Default":
+                    suitHead.SetActive(isSuited);
+                    break;
+                case "Always On":
+                    suitHead.SetActive(true);
+                    break;
+                case "Opposite":
+                    suitHead.SetActive(!isSuited);
+                    break;
+            }
 
-                    if (armsOn)
-                    {
-                        suitRArm.SetActive(true);
-                        suitLArm.SetActive(true);
-                    }
-                    else
-                    {
-                        suitRArm.SetActive(false);
-                        suitLArm.SetActive(false);
-                    }
+            // Jetpack
+            switch (jetpackSetting)
+            {
+                case "Always Off":
+                    suitJetpack.SetActive(false);
+                    suitJetpackFX.SetActive(false);
+                    ChangeAnimGroup("Suitless");
+                    break;
+                case "Default":
+                    suitJetpack.SetActive(isSuited);
+                    suitJetpackFX.SetActive(isSuited);
+                    if (!isSuited) ChangeAnimGroup("Suitless");
+                    else ChangeAnimGroup("Suited");
+                    break;
+                case "Always On":
+                    suitJetpack.SetActive(true);
+                    suitJetpackFX.SetActive(true);
+                    ChangeAnimGroup("Suited");
+                    break;
+                case "Opposite":
+                    suitJetpack.SetActive(!isSuited);
+                    suitJetpackFX.SetActive(!isSuited);
+                    if (isSuited) ChangeAnimGroup("Suitless");
+                    else ChangeAnimGroup("Suited");
+                    break;
+            }
 
-                    if (wearingHelmet) suitHead.SetActive(true);
-                    else suitHead.SetActive(false);
+            // Enable shaders for visible suit parts that have them
+            suitHeadShader.SetActive(suitHead.activeSelf);
+            suitRArmShader.SetActive(suitRArm.activeSelf);
 
-                    if (characterController._isWearingSuit) suitJetpack.SetActive(true);
-                    else suitJetpack.SetActive(false);
+            // Enable suitless body part if the cooresponding suited part is inactive
+            suitlessBody.SetActive(!suitBody.activeSelf);
+            suitlessHead.SetActive(!suitHead.activeSelf);
+            suitlessRArm.SetActive(!suitRArm.activeSelf);
+            suitlessLArm.SetActive(!suitLArm.activeSelf);
+            suitlessHeadShader.SetActive(!suitHeadShader.activeSelf);
+            suitlessRArmShader.SetActive(!suitRArmShader.activeSelf);
 
-                    suitHeadShader.SetActive(suitHead.activeSelf);
-                    suitRArmShader.SetActive(suitRArm.activeSelf);
+            // Set both suitless and suited models as visible and set individual parts' visibility
+            suitlessModel.SetActive(true);
+            suitModel.SetActive(true);
+        }
 
-                    suitlessBody.SetActive(!suitBody.activeSelf);
-                    suitlessHead.SetActive(!suitHead.activeSelf);
-                    suitlessRArm.SetActive(!suitRArm.activeSelf);
-                    suitlessLArm.SetActive(!suitLArm.activeSelf);
-                    suitlessHeadShader.SetActive(!suitHeadShader.activeSelf);
-                    suitlessRArmShader.SetActive(!suitRArmShader.activeSelf);
-
+        void ChangeAnimGroup(string animGroup)
+        {
+            switch (animGroup)
+            {
+                case "Suitless":
+                    animController._animator.runtimeAnimatorController = animController._unsuitedAnimOverride;
+                    animController._unsuitedGroup.SetActive(!PlayerState.InMapView());
+                    animController._suitedGroup.SetActive(false);
+                    break;
+                case "Suited":
+                    animController._animator.runtimeAnimatorController = animController._baseAnimController;
+                    animController._unsuitedGroup.SetActive(false);
+                    animController._suitedGroup.SetActive(!PlayerState.InMapView());
                     break;
             }
         }
