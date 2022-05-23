@@ -47,6 +47,8 @@ namespace HatchlingOutfit
                 "OnSuitUp", typeof(Patches), nameof(Patches.SuitChanged));
             ModHelper.HarmonyHelper.AddPostfix<PlayerCharacterController>(
                 "OnRemoveSuit", typeof(Patches), nameof(Patches.SuitChanged));
+            ModHelper.HarmonyHelper.AddPostfix<MapController>(
+                "ExitMapView", typeof(Patches), nameof(Patches.SuitChanged));
             ModHelper.Console.WriteLine($"Hatchling is ready to dazzle({nameof(HatchlingOutfit)} is ready)", MessageType.Success);
         }
 
@@ -281,8 +283,8 @@ namespace HatchlingOutfit
     }
 }
 
-/*      
- *      == 2022/5/22 ==
+/*
+ *      == 2022/05/22 ==
  *      
  *      Oh, hi. Didn't see you there ;)
  *  
@@ -291,4 +293,9 @@ namespace HatchlingOutfit
  *  
  *      But I didn't, because funny weird suit hatchling is clearly more important than my academic career!
  *      
- */  
+ *      
+ *      == 2022/05/23 ==
+ *      
+ *      Day two, still procrastinating on studying for finals.
+ *      
+ */
