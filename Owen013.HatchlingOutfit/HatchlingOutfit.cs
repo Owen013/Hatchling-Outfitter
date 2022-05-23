@@ -38,7 +38,7 @@ namespace HatchlingOutfit
             Instance = this;
         }
 
-        void Start()
+        private void Start()
         {
             // Add the patches
             ModHelper.HarmonyHelper.AddPostfix<PlayerAnimController>(
@@ -62,7 +62,7 @@ namespace HatchlingOutfit
 
             // Get permanent vars and separately grab the suitless and suited models
             characterController = Locator.GetPlayerController();
-            animController = characterController.GetComponent<PlayerAnimController>();
+            animController = FindObjectOfType<PlayerAnimController>();
             suitlessModel = playerModel.transform.Find("player_mesh_noSuit:Traveller_HEA_Player").gameObject;
             suitModel = playerModel.transform.Find("Traveller_Mesh_v01:Traveller_Geo").gameObject;
             suitJetpackFX = playerBody.transform.Find("PlayerVFX").gameObject;
@@ -237,7 +237,13 @@ namespace HatchlingOutfit
             suitRArmShader.SetActive(suitRArm.activeSelf);
         }
 
-        void ChangeAnimGroup(string animGroup)
+        private bool WrongScene()
+        {
+            OWScene scene = LoadManager.s_currentScene;
+            return !(scene == OWScene.SolarSystem || scene == OWScene.EyeOfTheUniverse);
+        }
+
+        private void ChangeAnimGroup(string animGroup)
         {
             // There are two anim groups for player: one for the suitless and one for suited. It looks weird
             // if the hatchling uses suit anims when the jetpack is off because they hold their left arm in
@@ -255,12 +261,6 @@ namespace HatchlingOutfit
                     animController._suitedGroup.SetActive(!PlayerState.InMapView());
                     break;
             }
-        }
-
-        bool WrongScene()
-        {
-            OWScene scene = LoadManager.s_currentScene;
-            return !(scene == OWScene.SolarSystem || scene == OWScene.EyeOfTheUniverse);
         }
     }
 
