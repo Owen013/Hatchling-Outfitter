@@ -1,4 +1,5 @@
 {
+  "$schema": "https://json-schema.org/draft-07/schema",
   "enabled": true,
   "settings": {
 
@@ -6,40 +7,56 @@
       "type": "selector",
       "value": "Always Suited",
       "options": [ "Always Suitless", "Default", "Always Suited", "Opposite" ],
-      "title": "Suit Body"
-    },
-
-    "Arms": {
-      "type": "selector",
-      "value": "Always Suitless",
-      "options": [ "Always Suitless", "Default", "Always Suited", "Opposite" ],
-      "title": "Suit Arms"
+      "tooltip": "Always Suitless: body never appears suited. Default: body only appears suited when player is wearing space suit. Always Suited: body always appears suited. Opposite: body appears suitless when space suit is worn, and suited when space suit is not worn."
     },
 
     "Head": {
       "type": "selector",
       "value": "Default",
       "options": [ "Always Suitless", "Default", "Always Suited", "Opposite" ],
-      "title": "Helmet"
+      "tooltip": "Always Suitless: head never appears helmeted. Default: head only appears helmeted when player is wearing space suit. Always Suited: head always appears helmeted. Opposite: head appears helmetless when space suit is worn, and helmeted when space suit is not worn."
+    },
+
+    "Right Arm": {
+      "type": "selector",
+      "value": "Always Suitless",
+      "options": [ "Always Suitless", "Default", "Always Suited", "Opposite" ],
+      "tooltip": "Always Suitless: arm never appears suited. Default: arm only appears suited when player is wearing space suit. Always Suited: arm always appears suited. Opposite: arm appears suitless when space suit is worn, and suited when space suit is not worn."
+    },
+
+    "Left Arm": {
+      "type": "selector",
+      "value": "Always Suitless",
+      "options": [ "Always Suitless", "Default", "Always Suited", "Opposite" ],
+      "tooltip": "Always Suitless: arm never appears suited. Default: arm only appears suited when player is wearing space suit. Always Suited: arm always appears suited. Opposite: arm appears suitless when space suit is worn, and suited when space suit is not worn."
     },
 
     "Jetpack": {
       "type": "selector",
       "value": "Default",
       "options": [ "Always Off", "Default", "Always On", "Opposite" ],
-      "title": "Jetpack"
+      "tooltip": "Always Suitless: jetpack never appears Default: jetpack only appears when player is wearing space suit. Always Suited: jetpack always appears. Opposite: jetpack doesn't appear when space suit is worn, but does appear when space suit is not worn."
     },
 
-    "Only Suit One Arm": {
-      "type": "selector",
-      "value": "Off",
-      "options": [ "Off", "Left", "Right" ],
-      "title": "Only Suit One Arm"
+    "Missing Body": {
+      "type": "toggle",
+      "value": false,
+      "tooltip": "The body will be completely invisible."
     },
-
-    "Missing Body": false,
-    "Missing Head": false,
-    "Missing Left Arm": false,
-    "Missing Right Arm": false
+    "Missing Head": {
+      "type": "toggle",
+      "value": false,
+      "tooltip": "The head will be completely invisible."
+    },
+    "Missing Left Arm": {
+      "type": "toggle",
+      "value": false,
+      "tooltip": "The left arm will be completely invisible."
+    },
+    "Missing Right Arm": {
+      "type": "toggle",
+      "value": false,
+      "tooltip": "The right arm will be completely invisible."
+    }
   }
 }
