@@ -1,10 +1,9 @@
-﻿namespace HatchlingOutfit
+﻿namespace HatchlingOutfit;
+
+public class HatchlingOutfitAPI
 {
-    public class HatchlingOutfitAPI
+    public bool GetPlayerHelmeted()
     {
-        public bool GetPlayerHelmeted()
-        {
-            return HatchlingOutfit.s_instance.IsPlayerHelmeted();
-        }
+        return ModController.s_instance.IsPlayerHelmeted();
     }
 }

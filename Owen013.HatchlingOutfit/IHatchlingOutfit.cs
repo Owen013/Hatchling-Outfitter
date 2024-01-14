@@ -1,7 +1,6 @@
-﻿namespace HatchlingOutfit
+﻿namespace HatchlingOutfit;
+
+public interface IHatchlingOutfit
 {
-    public interface IHatchlingOutfit
-    {
-        public bool GetPlayerHelmeted();
-    }
+    public bool GetPlayerHelmeted();
 }
