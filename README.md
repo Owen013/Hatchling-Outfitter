@@ -1,3 +1,3 @@
 Customize Hatchling's outfit
 
-![HatchlingOutfit1](https://user-images.githubusercontent.com/96493201/169888845-86c86fb1-e804-4ecf-895a-89f8fa55bc97.png)
+![HatchlingOutfit](https://github.com/Owen013/Hatchling-Outfitter/assets/96493201/c2b35ac0-7f5b-4777-a312-9bc0dbc6a9c4)
