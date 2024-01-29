@@ -1,32 +1,15 @@
-﻿using HarmonyLib;
-using OWML.ModHelper;
-using OWML.Common;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace HatchlingOutfit;
+namespace HatchlingOutfit.Components;
 
-public class ModController : ModBehaviour
+public class PlayerModelSwapper : MonoBehaviour
 {
-    // Config vars
-    private string _bodySetting;
-    private string _headSetting;
-    private string _rArmSetting;
-    private string _lArmSetting;
-    private string _jetpackSetting;
-    private bool _missingBody;
-    private bool _missingHead;
-    private bool _missingLArm;
-    private bool _missingRArm;
-
-    // Mod vars
-    public static ModController s_instance;
-    private PlayerCharacterController _characterController;
     private PlayerAnimController _animController;
     private GameObject _suitlessModel;
     private GameObject _suitlessBody;
     private GameObject _suitlessHead;
-    private GameObject _suitlessLArm;
     private GameObject _suitlessRArm;
+    private GameObject _suitlessLArm;
     private GameObject _suitlessHeadShader;
     private GameObject _suitlessRArmShader;
     private GameObject _suitModel;
@@ -39,40 +22,39 @@ public class ModController : ModBehaviour
     private GameObject _suitJetpack;
     private GameObject _suitJetpackFX;
 
-    public override object GetApi()
+    private void Awake()
     {
-        return new HatchlingOutfitAPI();
-    }
+        _animController = FindObjectOfType<PlayerAnimController>();
+        _suitlessModel = _animController.transform.Find("player_mesh_noSuit:Traveller_HEA_Player").gameObject;
+        _suitModel = _animController.transform.Find("Traveller_Mesh_v01:Traveller_Geo").gameObject;
+        _suitJetpackFX = GetComponentInParent<PlayerBody>().transform.Find("PlayerVFX").gameObject;
 
-    public override void Configure(IModConfig config)
-    {
-        base.Configure(config);
-        _bodySetting = config.GetSettingsValue<string>("Body");
-        _rArmSetting = config.GetSettingsValue<string>("Right Arm");
-        _lArmSetting = config.GetSettingsValue<string>("Left Arm");
-        _headSetting = config.GetSettingsValue<string>("Head");
-        _jetpackSetting = config.GetSettingsValue<string>("Jetpack");
-        _missingBody = config.GetSettingsValue<bool>("Missing Body");
-        _missingHead = config.GetSettingsValue<bool>("Missing Head");
-        _missingLArm = config.GetSettingsValue<bool>("Missing Left Arm");
-        _missingRArm = config.GetSettingsValue<bool>("Missing Right Arm");
+        // Get all individual parts for suitless
+        _suitlessBody = _suitlessModel.transform.Find("player_mesh_noSuit:Player_Clothes").gameObject;
+        _suitlessHead = _suitlessModel.transform.Find("player_mesh_noSuit:Player_Head").gameObject;
+        _suitlessLArm = _suitlessModel.transform.Find("player_mesh_noSuit:Player_LeftArm").gameObject;
+        _suitlessRArm = _suitlessModel.transform.Find("player_mesh_noSuit:Player_RightArm").gameObject;
+        _suitlessHeadShader = _suitlessModel.transform.Find("player_mesh_noSuit:Player_Head_ShadowCaster").gameObject;
+        _suitlessRArmShader = _suitlessModel.transform.Find("player_mesh_noSuit:Player_RightArm_ShadowCaster").gameObject;
+
+        // Get all individual parts for suited
+        _suitBody = _suitModel.transform.Find("Traveller_Mesh_v01:PlayerSuit_Body").gameObject;
+        _suitHead = _suitModel.transform.Find("Traveller_Mesh_v01:PlayerSuit_Helmet").gameObject;
+        _suitLArm = _suitModel.transform.Find("Traveller_Mesh_v01:PlayerSuit_LeftArm").gameObject;
+        _suitRArm = _suitModel.transform.Find("Traveller_Mesh_v01:PlayerSuit_RightArm").gameObject;
+        _suitHeadShader = _suitModel.transform.Find("Traveller_Mesh_v01:PlayerSuit_Helmet_ShadowCaster").gameObject;
+        _suitRArmShader = _suitModel.transform.Find("Traveller_Mesh_v01:PlayerSuit_RightArm_ShadowCaster").gameObject;
+        _suitJetpack = _suitModel.transform.Find("Traveller_Mesh_v01:Props_HEA_Jetpack").gameObject;
+
+        Main.Instance.OnConfigure += UpdateOutfit;
         UpdateOutfit();
     }
 
-    private void Awake()
+    public void UpdateOutfit()
     {
-        s_instance = this;
-        Harmony.CreateAndPatchAll(typeof(ModController));
-    }
+        bool isSuited = PlayerState.IsWearingSuit();
 
-    private void UpdateOutfit()
-    {
-        if (_characterController == null) return;
-
-        bool isSuited = _characterController._isWearingSuit;
-
-        // Jacket
-        switch (_bodySetting)
+        switch (Config.BodySetting)
         {
             case "Always Suitless":
                 _suitBody.SetActive(false);
@@ -88,8 +70,7 @@ public class ModController : ModBehaviour
                 break;
         }
 
-        // Right Arm
-        switch (_rArmSetting)
+        switch (Config.RightArmSetting)
         {
             case "Always Suitless":
                 _suitRArm.SetActive(false);
@@ -105,8 +86,7 @@ public class ModController : ModBehaviour
                 break;
         }
 
-        // Right Arm
-        switch (_lArmSetting)
+        switch (Config.LeftArmSetting)
         {
             case "Always Suitless":
                 _suitLArm.SetActive(false);
@@ -123,7 +103,7 @@ public class ModController : ModBehaviour
         }
 
         // Helmet
-        switch (_headSetting)
+        switch (Config.HeadSetting)
         {
             case "Always Suitless":
                 _suitHead.SetActive(false);
@@ -140,7 +120,7 @@ public class ModController : ModBehaviour
         }
 
         // Jetpack
-        switch (_jetpackSetting)
+        switch (Config.JetpackSetting)
         {
             case "Always Off":
                 _suitJetpack.SetActive(false);
@@ -178,25 +158,25 @@ public class ModController : ModBehaviour
         _suitlessRArm.SetActive(!_suitRArm.activeSelf);
 
         // Remove chosen body parts
-        if (_missingBody)
+        if (Config.IsMissingBody)
         {
             _suitlessBody.SetActive(false);
             _suitBody.SetActive(false);
         }
-        if (_missingHead)
+        if (Config.IsMissingHead)
         {
             _suitlessHead.SetActive(false);
             _suitHead.SetActive(false);
         }
-        if (_missingLArm)
-        {
-            _suitlessLArm.SetActive(false);
-            _suitLArm.SetActive(false);
-        }
-        if (_missingRArm)
+        if (Config.IsMissingRightArm)
         {
             _suitlessRArm.SetActive(false);
             _suitRArm.SetActive(false);
+        }
+        if (Config.IsMissingLeftArm)
+        {
+            _suitlessLArm.SetActive(false);
+            _suitLArm.SetActive(false);
         }
 
         // Enable shaders for visible parts that have them
@@ -229,49 +209,5 @@ public class ModController : ModBehaviour
     public bool IsPlayerHelmeted()
     {
         return _suitHead.activeSelf;
-    }
-
-    [HarmonyPostfix]
-    [HarmonyPatch(typeof(PlayerAnimController), nameof(PlayerAnimController.Start))]
-    private static void PlayerAnimControllerStart()
-    {
-        OWRigidbody playerBody = Locator.GetPlayerBody();
-        GameObject playerModel = playerBody.transform.Find("Traveller_HEA_Player_v2").gameObject;
-
-        // Get permanent vars and separately grab the suitless and suited models
-        s_instance._characterController = Locator.GetPlayerController();
-        s_instance._animController = FindObjectOfType<PlayerAnimController>();
-        s_instance._suitlessModel = playerModel.transform.Find("player_mesh_noSuit:Traveller_HEA_Player").gameObject;
-        s_instance._suitModel = playerModel.transform.Find("Traveller_Mesh_v01:Traveller_Geo").gameObject;
-        s_instance._suitJetpackFX = playerBody.transform.Find("PlayerVFX").gameObject;
-
-        // Get all individual parts for suitless
-        s_instance._suitlessBody = s_instance._suitlessModel.transform.Find("player_mesh_noSuit:Player_Clothes").gameObject;
-        s_instance._suitlessHead = s_instance._suitlessModel.transform.Find("player_mesh_noSuit:Player_Head").gameObject;
-        s_instance._suitlessLArm = s_instance._suitlessModel.transform.Find("player_mesh_noSuit:Player_LeftArm").gameObject;
-        s_instance._suitlessRArm = s_instance._suitlessModel.transform.Find("player_mesh_noSuit:Player_RightArm").gameObject;
-        s_instance._suitlessHeadShader = s_instance._suitlessModel.transform.Find("player_mesh_noSuit:Player_Head_ShadowCaster").gameObject;
-        s_instance._suitlessRArmShader = s_instance._suitlessModel.transform.Find("player_mesh_noSuit:Player_RightArm_ShadowCaster").gameObject;
-
-        // Get all individual parts for suited
-        s_instance._suitBody = s_instance._suitModel.transform.Find("Traveller_Mesh_v01:PlayerSuit_Body").gameObject;
-        s_instance._suitHead = s_instance._suitModel.transform.Find("Traveller_Mesh_v01:PlayerSuit_Helmet").gameObject;
-        s_instance._suitLArm = s_instance._suitModel.transform.Find("Traveller_Mesh_v01:PlayerSuit_LeftArm").gameObject;
-        s_instance._suitRArm = s_instance._suitModel.transform.Find("Traveller_Mesh_v01:PlayerSuit_RightArm").gameObject;
-        s_instance._suitHeadShader = s_instance._suitModel.transform.Find("Traveller_Mesh_v01:PlayerSuit_Helmet_ShadowCaster").gameObject;
-        s_instance._suitRArmShader = s_instance._suitModel.transform.Find("Traveller_Mesh_v01:PlayerSuit_RightArm_ShadowCaster").gameObject;
-        s_instance._suitJetpack = s_instance._suitModel.transform.Find("Traveller_Mesh_v01:Props_HEA_Jetpack").gameObject;
-
-        // Now that all vars are set, make the actual ingame changes
-        s_instance.UpdateOutfit();
-    }
-
-    [HarmonyPostfix]
-    [HarmonyPatch(typeof(PlayerCharacterController), nameof(PlayerCharacterController.OnSuitUp))]
-    [HarmonyPatch(typeof(PlayerCharacterController), nameof(PlayerCharacterController.OnRemoveSuit))]
-    [HarmonyPatch(typeof(MapController), nameof(MapController.ExitMapView))]
-    private static void SuitChanged()
-    {
-        s_instance.UpdateOutfit();
     }
 }

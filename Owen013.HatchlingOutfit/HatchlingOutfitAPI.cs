@@ -1,9 +1,11 @@
-﻿namespace HatchlingOutfit;
+﻿using HatchlingOutfit.Components;
+
+namespace HatchlingOutfit;
 
 public class HatchlingOutfitAPI
 {
     public bool GetPlayerHelmeted()
     {
-        return ModController.s_instance.IsPlayerHelmeted();
+        return Locator.GetPlayerBody().GetComponentInChildren<PlayerModelSwapper>().IsPlayerHelmeted();
     }
 }
