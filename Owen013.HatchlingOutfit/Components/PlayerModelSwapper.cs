@@ -8,17 +8,17 @@ public class PlayerModelSwapper : MonoBehaviour
     private GameObject _suitlessModel;
     private GameObject _suitlessBody;
     private GameObject _suitlessHead;
-    private GameObject _suitlessRArm;
-    private GameObject _suitlessLArm;
+    private GameObject _suitlessRightArm;
+    private GameObject _suitlessLeftArm;
     private GameObject _suitlessHeadShader;
-    private GameObject _suitlessRArmShader;
+    private GameObject _suitlessRightArmShader;
     private GameObject _suitModel;
     private GameObject _suitBody;
     private GameObject _suitHead;
-    private GameObject _suitLArm;
-    private GameObject _suitRArm;
+    private GameObject _suitLeftArm;
+    private GameObject _suitRightArm;
     private GameObject _suitHeadShader;
-    private GameObject _suitRArmShader;
+    private GameObject _suitRightArmShader;
     private GameObject _suitJetpack;
     private GameObject _suitJetpackFX;
 
@@ -32,18 +32,18 @@ public class PlayerModelSwapper : MonoBehaviour
         // Get all individual parts for suitless
         _suitlessBody = _suitlessModel.transform.Find("player_mesh_noSuit:Player_Clothes").gameObject;
         _suitlessHead = _suitlessModel.transform.Find("player_mesh_noSuit:Player_Head").gameObject;
-        _suitlessLArm = _suitlessModel.transform.Find("player_mesh_noSuit:Player_LeftArm").gameObject;
-        _suitlessRArm = _suitlessModel.transform.Find("player_mesh_noSuit:Player_RightArm").gameObject;
+        _suitlessLeftArm = _suitlessModel.transform.Find("player_mesh_noSuit:Player_LeftArm").gameObject;
+        _suitlessRightArm = _suitlessModel.transform.Find("player_mesh_noSuit:Player_RightArm").gameObject;
         _suitlessHeadShader = _suitlessModel.transform.Find("player_mesh_noSuit:Player_Head_ShadowCaster").gameObject;
-        _suitlessRArmShader = _suitlessModel.transform.Find("player_mesh_noSuit:Player_RightArm_ShadowCaster").gameObject;
+        _suitlessRightArmShader = _suitlessModel.transform.Find("player_mesh_noSuit:Player_RightArm_ShadowCaster").gameObject;
 
         // Get all individual parts for suited
         _suitBody = _suitModel.transform.Find("Traveller_Mesh_v01:PlayerSuit_Body").gameObject;
         _suitHead = _suitModel.transform.Find("Traveller_Mesh_v01:PlayerSuit_Helmet").gameObject;
-        _suitLArm = _suitModel.transform.Find("Traveller_Mesh_v01:PlayerSuit_LeftArm").gameObject;
-        _suitRArm = _suitModel.transform.Find("Traveller_Mesh_v01:PlayerSuit_RightArm").gameObject;
+        _suitLeftArm = _suitModel.transform.Find("Traveller_Mesh_v01:PlayerSuit_LeftArm").gameObject;
+        _suitRightArm = _suitModel.transform.Find("Traveller_Mesh_v01:PlayerSuit_RightArm").gameObject;
         _suitHeadShader = _suitModel.transform.Find("Traveller_Mesh_v01:PlayerSuit_Helmet_ShadowCaster").gameObject;
-        _suitRArmShader = _suitModel.transform.Find("Traveller_Mesh_v01:PlayerSuit_RightArm_ShadowCaster").gameObject;
+        _suitRightArmShader = _suitModel.transform.Find("Traveller_Mesh_v01:PlayerSuit_RightArm_ShadowCaster").gameObject;
         _suitJetpack = _suitModel.transform.Find("Traveller_Mesh_v01:Props_HEA_Jetpack").gameObject;
 
         Main.Instance.OnConfigure += UpdateOutfit;
@@ -73,32 +73,32 @@ public class PlayerModelSwapper : MonoBehaviour
         switch (Config.RightArmSetting)
         {
             case "Always Suitless":
-                _suitRArm.SetActive(false);
+                _suitRightArm.SetActive(false);
                 break;
             case "Default":
-                _suitRArm.SetActive(isSuited);
+                _suitRightArm.SetActive(isSuited);
                 break;
             case "Always Suited":
-                _suitRArm.SetActive(true);
+                _suitRightArm.SetActive(true);
                 break;
             case "Opposite":
-                _suitRArm.SetActive(!isSuited);
+                _suitRightArm.SetActive(!isSuited);
                 break;
         }
 
         switch (Config.LeftArmSetting)
         {
             case "Always Suitless":
-                _suitLArm.SetActive(false);
+                _suitLeftArm.SetActive(false);
                 break;
             case "Default":
-                _suitLArm.SetActive(isSuited);
+                _suitLeftArm.SetActive(isSuited);
                 break;
             case "Always Suited":
-                _suitLArm.SetActive(true);
+                _suitLeftArm.SetActive(true);
                 break;
             case "Opposite":
-                _suitLArm.SetActive(!isSuited);
+                _suitLeftArm.SetActive(!isSuited);
                 break;
         }
 
@@ -154,8 +154,8 @@ public class PlayerModelSwapper : MonoBehaviour
         // Enable suitless body part if the cooresponding suited part is inactive
         _suitlessBody.SetActive(!_suitBody.activeSelf);
         _suitlessHead.SetActive(!_suitHead.activeSelf);
-        _suitlessLArm.SetActive(!_suitLArm.activeSelf);
-        _suitlessRArm.SetActive(!_suitRArm.activeSelf);
+        _suitlessLeftArm.SetActive(!_suitLeftArm.activeSelf);
+        _suitlessRightArm.SetActive(!_suitRightArm.activeSelf);
 
         // Remove chosen body parts
         if (Config.IsMissingBody)
@@ -170,20 +170,20 @@ public class PlayerModelSwapper : MonoBehaviour
         }
         if (Config.IsMissingRightArm)
         {
-            _suitlessRArm.SetActive(false);
-            _suitRArm.SetActive(false);
+            _suitlessRightArm.SetActive(false);
+            _suitRightArm.SetActive(false);
         }
         if (Config.IsMissingLeftArm)
         {
-            _suitlessLArm.SetActive(false);
-            _suitLArm.SetActive(false);
+            _suitlessLeftArm.SetActive(false);
+            _suitLeftArm.SetActive(false);
         }
 
         // Enable shaders for visible parts that have them
         _suitlessHeadShader.SetActive(_suitHeadShader.activeSelf);
-        _suitlessRArmShader.SetActive(_suitRArmShader.activeSelf);
+        _suitlessRightArmShader.SetActive(_suitRightArmShader.activeSelf);
         _suitHeadShader.SetActive(_suitHead.activeSelf);
-        _suitRArmShader.SetActive(_suitRArm.activeSelf);
+        _suitRightArmShader.SetActive(_suitRightArm.activeSelf);
     }
 
     private void ChangeAnimGroup(string animGroup)
