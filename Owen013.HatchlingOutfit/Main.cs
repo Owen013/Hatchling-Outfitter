@@ -9,6 +9,8 @@ namespace HatchlingOutfit;
 public class Main : ModBehaviour
 {
     public static Main Instance;
+    public delegate void ConfigureEvent();
+    public event ConfigureEvent OnConfigure;
 
     public override object GetApi()
     {
@@ -19,7 +21,7 @@ public class Main : ModBehaviour
     {
         base.Configure(config);
         Config.UpdateConfig(config);
-        PlayerModelSwapper.Instance?.UpdateOutfit();
+        OnConfigure?.Invoke();
     }
     public void Log(string text, MessageType type = MessageType.Message)
     {

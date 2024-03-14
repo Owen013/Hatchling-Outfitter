@@ -49,7 +49,13 @@ public class PlayerModelSwapper : MonoBehaviour
         _suitRightArmShader = _suitModel.transform.Find("Traveller_Mesh_v01:PlayerSuit_RightArm_ShadowCaster").gameObject;
         _suitJetpack = _suitModel.transform.Find("Traveller_Mesh_v01:Props_HEA_Jetpack").gameObject;
 
+        Main.Instance.OnConfigure += UpdateOutfit;
         UpdateOutfit();
+    }
+
+    private void OnDestroy()
+    {
+        Main.Instance.OnConfigure -= UpdateOutfit;
     }
 
     public void UpdateOutfit()
