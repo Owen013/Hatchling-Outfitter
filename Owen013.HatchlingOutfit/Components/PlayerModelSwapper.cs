@@ -4,6 +4,7 @@ namespace HatchlingOutfit.Components;
 
 public class PlayerModelSwapper : MonoBehaviour
 {
+    public static PlayerModelSwapper Instance;
     private PlayerAnimController _animController;
     private GameObject _suitlessModel;
     private GameObject _suitlessBody;
@@ -24,7 +25,9 @@ public class PlayerModelSwapper : MonoBehaviour
 
     private void Awake()
     {
-        _animController = FindObjectOfType<PlayerAnimController>();
+        Instance = this;
+
+        _animController = GetComponent<PlayerAnimController>();
         _suitlessModel = _animController.transform.Find("player_mesh_noSuit:Traveller_HEA_Player").gameObject;
         _suitModel = _animController.transform.Find("Traveller_Mesh_v01:Traveller_Geo").gameObject;
         _suitJetpackFX = GetComponentInParent<PlayerBody>().transform.Find("PlayerVFX").gameObject;
@@ -46,7 +49,6 @@ public class PlayerModelSwapper : MonoBehaviour
         _suitRightArmShader = _suitModel.transform.Find("Traveller_Mesh_v01:PlayerSuit_RightArm_ShadowCaster").gameObject;
         _suitJetpack = _suitModel.transform.Find("Traveller_Mesh_v01:Props_HEA_Jetpack").gameObject;
 
-        Main.Instance.OnConfigure += UpdateOutfit;
         UpdateOutfit();
     }
 

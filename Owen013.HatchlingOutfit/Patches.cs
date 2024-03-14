@@ -7,18 +7,18 @@ namespace HatchlingOutfit;
 public static class Patches
 {
     [HarmonyPostfix]
-    [HarmonyPatch(typeof(PlayerAnimController), nameof(PlayerAnimController.Start))]
-    private static void PlayerAnimControllerStart(PlayerAnimController __instance)
+    [HarmonyPatch(typeof(PlayerCharacterController), nameof(PlayerCharacterController.Start))]
+    private static void PlayerControllerStart(PlayerCharacterController __instance)
     {
-        __instance.gameObject.AddComponent<PlayerModelSwapper>();
+        __instance.GetComponentInChildren<PlayerAnimController>().gameObject.AddComponent<PlayerModelSwapper>();
     }
 
     [HarmonyPostfix]
     [HarmonyPatch(typeof(PlayerCharacterController), nameof(PlayerCharacterController.OnSuitUp))]
     [HarmonyPatch(typeof(PlayerCharacterController), nameof(PlayerCharacterController.OnRemoveSuit))]
     //[HarmonyPatch(typeof(MapController), nameof(MapController.ExitMapView))] // why is this here???
-    private static void SuitChanged(PlayerCharacterController __instance)
+    private static void SuitChanged()
     {
-        __instance.GetComponentInChildren<PlayerModelSwapper>().UpdateOutfit();
+        PlayerModelSwapper.Instance?.UpdateOutfit();
     }
 }
