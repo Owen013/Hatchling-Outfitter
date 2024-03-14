@@ -2,7 +2,6 @@
 using OWML.ModHelper;
 using OWML.Common;
 using System.Reflection;
-using HatchlingOutfit.Components;
 
 namespace HatchlingOutfit;
 

@@ -63,18 +63,23 @@ public class PlayerModelSwapper : MonoBehaviour
         {
             case "Always Suitless":
                 _suitHead.SetActive(false);
+                _suitHeadShadow.SetActive(false);
                 break;
             case "Default":
                 _suitHead.SetActive(isWearingHelmet);
+                _suitHeadShadow.SetActive(isWearingHelmet);
                 break;
             case "Always Suited":
                 _suitHead.SetActive(true);
+                _suitHeadShadow.SetActive(true);
                 break;
             case "Opposite":
                 _suitHead.SetActive(!isWearingHelmet);
+                _suitHeadShadow.SetActive(!isWearingHelmet);
                 break;
         }
         _suitlessHead.SetActive(!_suitHead.activeInHierarchy);
+        _suitlessHeadShadow.SetActive(!_suitHeadShadow.activeInHierarchy);
 
         // Change rightarm shadow layers
         _suitlessRightArmShadow.layer = _suitlessRightArm.layer;
@@ -165,7 +170,6 @@ public class PlayerModelSwapper : MonoBehaviour
                 break;
         }
 
-
         // Set both suitless and suited whole models as visible
         _suitlessModel.SetActive(true);
         _suitModel.SetActive(true);
@@ -198,9 +202,7 @@ public class PlayerModelSwapper : MonoBehaviour
         }
 
         // Enable shadows for visible parts that have them
-        _suitlessHeadShadow.SetActive(_suitHeadShadow.activeInHierarchy);
         _suitlessRightArmShadow.SetActive(_suitlessRightArm.activeInHierarchy);
-        _suitHeadShadow.SetActive(_suitHead.activeInHierarchy);
         _suitRightArmShadow.SetActive(_suitRightArm.activeInHierarchy);
     }
 
