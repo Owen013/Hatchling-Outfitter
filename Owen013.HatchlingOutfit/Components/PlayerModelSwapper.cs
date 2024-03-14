@@ -6,20 +6,21 @@ public class PlayerModelSwapper : MonoBehaviour
 {
     public static PlayerModelSwapper Instance;
     private PlayerAnimController _animController;
+    private PlayerSpacesuit _spacesuit;
     private GameObject _suitlessModel;
     private GameObject _suitlessBody;
     private GameObject _suitlessHead;
     private GameObject _suitlessRightArm;
     private GameObject _suitlessLeftArm;
-    private GameObject _suitlessHeadShader;
-    private GameObject _suitlessRightArmShader;
+    private GameObject _suitlessHeadShadow;
+    private GameObject _suitlessRightArmShadow;
     private GameObject _suitModel;
     private GameObject _suitBody;
     private GameObject _suitHead;
     private GameObject _suitLeftArm;
     private GameObject _suitRightArm;
-    private GameObject _suitHeadShader;
-    private GameObject _suitRightArmShader;
+    private GameObject _suitHeadShadow;
+    private GameObject _suitRightArmShadow;
     private GameObject _suitJetpack;
     private GameObject _suitJetpackFX;
 
@@ -28,6 +29,7 @@ public class PlayerModelSwapper : MonoBehaviour
         Instance = this;
 
         _animController = GetComponent<PlayerAnimController>();
+        _spacesuit = _animController.GetComponentInParent<PlayerSpacesuit>();
         _suitlessModel = _animController.transform.Find("player_mesh_noSuit:Traveller_HEA_Player").gameObject;
         _suitModel = _animController.transform.Find("Traveller_Mesh_v01:Traveller_Geo").gameObject;
         _suitJetpackFX = GetComponentInParent<PlayerBody>().transform.Find("PlayerVFX").gameObject;
@@ -37,20 +39,46 @@ public class PlayerModelSwapper : MonoBehaviour
         _suitlessHead = _suitlessModel.transform.Find("player_mesh_noSuit:Player_Head").gameObject;
         _suitlessLeftArm = _suitlessModel.transform.Find("player_mesh_noSuit:Player_LeftArm").gameObject;
         _suitlessRightArm = _suitlessModel.transform.Find("player_mesh_noSuit:Player_RightArm").gameObject;
-        _suitlessHeadShader = _suitlessModel.transform.Find("player_mesh_noSuit:Player_Head_ShadowCaster").gameObject;
-        _suitlessRightArmShader = _suitlessModel.transform.Find("player_mesh_noSuit:Player_RightArm_ShadowCaster").gameObject;
+        _suitlessHeadShadow = _suitlessModel.transform.Find("player_mesh_noSuit:Player_Head_ShadowCaster").gameObject;
+        _suitlessRightArmShadow = _suitlessModel.transform.Find("player_mesh_noSuit:Player_RightArm_ShadowCaster").gameObject;
 
         // Get all individual parts for suited
         _suitBody = _suitModel.transform.Find("Traveller_Mesh_v01:PlayerSuit_Body").gameObject;
         _suitHead = _suitModel.transform.Find("Traveller_Mesh_v01:PlayerSuit_Helmet").gameObject;
         _suitLeftArm = _suitModel.transform.Find("Traveller_Mesh_v01:PlayerSuit_LeftArm").gameObject;
         _suitRightArm = _suitModel.transform.Find("Traveller_Mesh_v01:PlayerSuit_RightArm").gameObject;
-        _suitHeadShader = _suitModel.transform.Find("Traveller_Mesh_v01:PlayerSuit_Helmet_ShadowCaster").gameObject;
-        _suitRightArmShader = _suitModel.transform.Find("Traveller_Mesh_v01:PlayerSuit_RightArm_ShadowCaster").gameObject;
+        _suitHeadShadow = _suitModel.transform.Find("Traveller_Mesh_v01:PlayerSuit_Helmet_ShadowCaster").gameObject;
+        _suitRightArmShadow = _suitModel.transform.Find("Traveller_Mesh_v01:PlayerSuit_RightArm_ShadowCaster").gameObject;
         _suitJetpack = _suitModel.transform.Find("Traveller_Mesh_v01:Props_HEA_Jetpack").gameObject;
 
         Main.Instance.OnConfigure += UpdateOutfit;
         UpdateOutfit();
+    }
+
+    private void LateUpdate()
+    {
+        // Helmet
+        bool isWearingHelmet = _spacesuit.IsWearingHelmet();
+        switch (Config.HeadSetting)
+        {
+            case "Always Suitless":
+                _suitHead.SetActive(false);
+                break;
+            case "Default":
+                _suitHead.SetActive(isWearingHelmet);
+                break;
+            case "Always Suited":
+                _suitHead.SetActive(true);
+                break;
+            case "Opposite":
+                _suitHead.SetActive(!isWearingHelmet);
+                break;
+        }
+        _suitlessHead.SetActive(!_suitHead.activeInHierarchy);
+
+        // Change rightarm shadow layers
+        _suitlessRightArmShadow.layer = _suitlessRightArm.layer;
+        _suitRightArmShadow.layer = _suitRightArm.layer;
     }
 
     private void OnDestroy()
@@ -110,23 +138,6 @@ public class PlayerModelSwapper : MonoBehaviour
                 break;
         }
 
-        // Helmet
-        switch (Config.HeadSetting)
-        {
-            case "Always Suitless":
-                _suitHead.SetActive(false);
-                break;
-            case "Default":
-                _suitHead.SetActive(isSuited);
-                break;
-            case "Always Suited":
-                _suitHead.SetActive(true);
-                break;
-            case "Opposite":
-                _suitHead.SetActive(!isSuited);
-                break;
-        }
-
         // Jetpack
         switch (Config.JetpackSetting)
         {
@@ -160,10 +171,9 @@ public class PlayerModelSwapper : MonoBehaviour
         _suitModel.SetActive(true);
 
         // Enable suitless body part if the cooresponding suited part is inactive
-        _suitlessBody.SetActive(!_suitBody.activeSelf);
-        _suitlessHead.SetActive(!_suitHead.activeSelf);
-        _suitlessLeftArm.SetActive(!_suitLeftArm.activeSelf);
-        _suitlessRightArm.SetActive(!_suitRightArm.activeSelf);
+        _suitlessBody.SetActive(!_suitBody.activeInHierarchy);
+        _suitlessLeftArm.SetActive(!_suitLeftArm.activeInHierarchy);
+        _suitlessRightArm.SetActive(!_suitRightArm.activeInHierarchy);
 
         // Remove chosen body parts
         if (Config.IsMissingBody)
@@ -187,11 +197,11 @@ public class PlayerModelSwapper : MonoBehaviour
             _suitLeftArm.SetActive(false);
         }
 
-        // Enable shaders for visible parts that have them
-        _suitlessHeadShader.SetActive(_suitHeadShader.activeSelf);
-        _suitlessRightArmShader.SetActive(_suitRightArmShader.activeSelf);
-        _suitHeadShader.SetActive(_suitHead.activeSelf);
-        _suitRightArmShader.SetActive(_suitRightArm.activeSelf);
+        // Enable shadows for visible parts that have them
+        _suitlessHeadShadow.SetActive(_suitHeadShadow.activeInHierarchy);
+        _suitlessRightArmShadow.SetActive(_suitlessRightArm.activeInHierarchy);
+        _suitHeadShadow.SetActive(_suitHead.activeInHierarchy);
+        _suitRightArmShadow.SetActive(_suitRightArm.activeInHierarchy);
     }
 
     private void ChangeAnimGroup(string animGroup)
@@ -216,6 +226,6 @@ public class PlayerModelSwapper : MonoBehaviour
 
     public bool IsPlayerHelmeted()
     {
-        return _suitHead.activeSelf;
+        return _suitHead.activeInHierarchy;
     }
 }
